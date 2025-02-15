@@ -1,0 +1,37 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+// npx prisma db push آپدیت مدل ها
+/////////////////////////////       Model User         /////////////////////////////
+model Expert {
+  id          String       @id @default(uuid()) @db.Uuid
+  isVerify    Boolean      @default(false) // احراز هویت
+  isDelete    Boolean      @default(false) // حذف شدن
+  isStatus    Boolean      @default(false) // وضعیت تکمیل اطلاعات
+  name        String? // نام و نام خانوادگی
+  age         String? // سن
+  phone       String?      @unique // شماره تلفن
+  province    String? // استان
+  city        String? // شهرستان
+  gender      RoleGender? // جنسیت
+  jobStatus   Boolean? // مشغول به کار هستش
+  jobLocation String? // موقعیت شغل
+  jobTitle    String? // سمت شغل
+  jobTime     String? // مدت زمان شغل
+  image       String? // عکس
+  password    String // پسورد
+  verifyPass  String? // پسورد ارسال شده با پیامک
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+enum RoleGender {
+  MAN
+  WOMAN
+  All
+}
