@@ -6,32 +6,122 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
 }
+
 // npx prisma db push آپدیت مدل ها
 /////////////////////////////       Model User         /////////////////////////////
-model Expert {
-  id          String       @id @default(uuid()) @db.Uuid
-  isVerify    Boolean      @default(false) // احراز هویت
-  isDelete    Boolean      @default(false) // حذف شدن
-  isStatus    Boolean      @default(false) // وضعیت تکمیل اطلاعات
-  name        String? // نام و نام خانوادگی
-  age         String? // سن
-  phone       String?      @unique // شماره تلفن
-  province    String? // استان
-  city        String? // شهرستان
-  gender      RoleGender? // جنسیت
-  jobStatus   Boolean? // مشغول به کار هستش
-  jobLocation String? // موقعیت شغل
-  jobTitle    String? // سمت شغل
-  jobTime     String? // مدت زمان شغل
-  image       String? // عکس
-  password    String // پسورد
-  verifyPass  String? // پسورد ارسال شده با پیامک
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+model User {
+  id          String        @id @default(uuid()) @db.Uuid
+  name        String // نام  
+  password    String
+  email       String?       @unique // ایمیل
+  phone       String        @unique // شماره تلفن
+  role        RolePerson    @default(CUSTOMER) // جنسیت
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  AddressUser AddressUser[]
+  Product     Product[]
+
+  @@index([email, phone])
 }
 
-enum RoleGender {
-  MAN
-  WOMAN
-  All
+enum RolePerson {
+  ADMIN
+  CUSTOMER
+  AUTHOR
+}
+
+/////////////////////////////       Model AddressUser         /////////////////////////////
+
+model AddressUser {
+  id      Int    @id @default(autoincrement())
+  adrress String
+  name    String
+  phone   String
+  userId  String @db.Uuid
+  User    User   @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+/////////////////////////////       Model Product         /////////////////////////////
+
+model Product {
+  id           Int       @id @default(autoincrement())
+  isStatus     Boolean   @default(false)
+  isAvailable  Boolean   @default(false)
+  refCode      String    @unique
+  slug         String    @unique
+  name         String
+  gallery      String[]
+  description  String
+  tags         String[]
+  price        Decimal
+  weight       Decimal
+  stock        Int
+  detail       Json?
+  rating       Decimal?
+  totalComment Int?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  userId       String    @db.Uuid
+  User         User      @relation(fields: [userId], references: [id])
+  discountId   Int?
+  Discount     Discount? @relation(fields: [discountId], references: [id])
+  Comment      Comment[]
+  Category     Category  @relation(fields: [categoryId], references: [id])
+  categoryId   Int
+
+  @@index([slug, isStatus])
+  @@index([refCode, isAvailable, price, name, description])
+}
+
+/////////////////////////////       Model Discount         /////////////////////////////
+
+model Discount {
+  id        Int          @id @default(autoincrement())
+  amount    Int?
+  code      String?      @unique
+  type      TypeDiscount
+  discount  Decimal
+  startDate DateTime
+  endDate   DateTime
+  Product   Product[]
+
+  @@index([code, endDate])
+}
+
+enum TypeDiscount {
+  PERCENT
+  FIXED
+}
+
+/////////////////////////////       Model Comment         /////////////////////////////
+model Comment {
+  id         Int       @id @default(autoincrement())
+  isApproved Boolean   @default(false)
+  name       String
+  phone      String
+  email      String
+  content    String
+  rating     Int?
+  createdAt  DateTime  @default(now())
+  productId  Int
+  Product    Product   @relation(fields: [productId], references: [id])
+  replyId    Int? // پاسخ‌دهی اختیاری
+  replyTo    Comment?  @relation("CommentReplies", fields: [replyId], references: [id])
+  replies    Comment[] @relation("CommentReplies")
+
+  @@index([productId, replyId, isApproved])
+}
+
+/////////////////////////////       Model Category         /////////////////////////////
+model Category {
+  id            Int        @id @default(autoincrement())
+  name          String     @unique
+  subCategoryId Int?
+  subCategoryTo Category?  @relation("SubCategory", fields: [subCategoryId], references: [id])
+  subCategorys  Category[] @relation("SubCategory")
+  Product       Product[]
+
+  @@index([subCategoryId])
 }

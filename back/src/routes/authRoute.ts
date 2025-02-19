@@ -1,8 +1,7 @@
 import express from "express"
-import { loginCompany, loginExpert, logOutUser, signUpCompany, signUpExpert, verifyPassword } from "../controllers/authCtrl"
+import { forgetPassword, signOut, signIn, signUp } from "../controllers/authCtrl"
 const route = express.Router()
-// route.route("/logout").get(logOutUser)
-// route.route("/expert").post(signUpExpert).put(loginExpert)
-// route.route("/company").post(signUpCompany).put(loginCompany)
-// route.route("/verify/:id").post(verifyPassword)
+route.route("/logout").get(signOut)
+route.route("/").post(signUp).put(signIn)
+route.route("/forget-pass").post(forgetPassword)
 export = route

@@ -7,6 +7,8 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { globalHandler, notFound } from '../middlewares/globalError';
 import authRoute from '../routes/authRoute';
+import userRoute from '../routes/userRoute';
+import adderssRoute from '../routes/adderssRoute';
 ///////////// config Security
 dotenv.config();
 const app = express();
@@ -24,6 +26,8 @@ const defualtApi = process.env.API_VERSION;
 
 ///////////// Api Routes
 app.use(defualtApi + 'auth', authRoute);
+app.use(defualtApi + 'user', userRoute);
+app.use(defualtApi + 'address', adderssRoute);
 app.use(globalHandler);
 app.use(notFound);
 

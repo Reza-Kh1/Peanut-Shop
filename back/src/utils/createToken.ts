@@ -1,7 +1,7 @@
 import token from 'jsonwebtoken';
 const createToken = (value: object) => {
   return token.sign(value, process.env.TOKEN_SECURITY as string, {
-    expiresIn: '5d',
+    expiresIn: '10d',
   });
 };
 export default createToken;
