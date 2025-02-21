@@ -48,7 +48,7 @@ model AddressUser {
 model Product {
   id           Int       @id @default(autoincrement())
   isStatus     Boolean   @default(false)
-  isAvailable  Boolean   @default(false)
+  isAvailable  Boolean   @default(true)
   refCode      String    @unique
   slug         String    @unique
   name         String

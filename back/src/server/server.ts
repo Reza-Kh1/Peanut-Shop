@@ -9,6 +9,8 @@ import { globalHandler, notFound } from '../middlewares/globalError';
 import authRoute from '../routes/authRoute';
 import userRoute from '../routes/userRoute';
 import adderssRoute from '../routes/adderssRoute';
+import categoryRoute from '../routes/categoryRoute';
+import productRoute from '../routes/productRoute';
 ///////////// config Security
 dotenv.config();
 const app = express();
@@ -28,6 +30,8 @@ const defualtApi = process.env.API_VERSION;
 app.use(defualtApi + 'auth', authRoute);
 app.use(defualtApi + 'user', userRoute);
 app.use(defualtApi + 'address', adderssRoute);
+app.use(defualtApi + 'category', categoryRoute);
+app.use(defualtApi + 'product', productRoute);
 app.use(globalHandler);
 app.use(notFound);
 
