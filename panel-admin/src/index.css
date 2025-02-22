@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: "iranSans";
+    src: url("./fonts/Iran-Sans.woff") format("woff");
+}
+
+body {
+    box-sizing: border-box;
+    font-family: "iranSans", Arial, Helvetica, sans-serif;
+    background-color: #ffffff;
+}
+
+.rtl {
+    font-family: "iranSans", Arial, Helvetica, sans-serif;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+.text-blog p {
+    color: #666666;
+}
+
+.text-blog h {
+    color: #ffffff;
+}
+
+.custom-scroll::-webkit-scrollbar {
+    width: 6px;
+    /* عرض اسکرول‌بار */
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    /* پس‌زمینه اسکرول‌بار */
+    border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: #dbdbdb;
+    /* رنگ دستگیره اسکرول‌بار */
+    border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: #555;
+    /* رنگ دستگیره در حالت هاور */
+}
+
+
+.cutline {
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+
+.cutline-1 {
+    -webkit-line-clamp: 1;
+    line-clamp: 1
+}
+
+.cutline-2 {
+    -webkit-line-clamp: 2;
+    line-clamp: 2
+}
+
+.cutline-3 {
+    -webkit-line-clamp: 3;
+    line-clamp: 3
+}
+
+.cutline-4 {
+    -webkit-line-clamp: 4;
+    line-clamp: 4
+}
