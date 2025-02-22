@@ -1,0 +1,7 @@
+export default defineConfig({
+  server: {
+    proxy: {
+      '/robots.txt': 'path_to_your_static_file',
+    },
+  },
+});
