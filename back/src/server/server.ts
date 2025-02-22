@@ -11,6 +11,9 @@ import userRoute from '../routes/userRoute';
 import adderssRoute from '../routes/adderssRoute';
 import categoryRoute from '../routes/categoryRoute';
 import productRoute from '../routes/productRoute';
+import commentRoute from '../routes/commentRoute';
+import discountRoute from '../routes/discountRoute';
+import uploadRoute from '../routes/uploadRoute';
 ///////////// config Security
 dotenv.config();
 const app = express();
@@ -32,6 +35,9 @@ app.use(defualtApi + 'user', userRoute);
 app.use(defualtApi + 'address', adderssRoute);
 app.use(defualtApi + 'category', categoryRoute);
 app.use(defualtApi + 'product', productRoute);
+app.use(defualtApi + 'comment', commentRoute);
+app.use(defualtApi + 'discount', discountRoute);
+app.use(defualtApi + 'upload', uploadRoute);
 app.use(globalHandler);
 app.use(notFound);
 

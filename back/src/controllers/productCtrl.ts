@@ -58,12 +58,33 @@ const getProduct = asyncHandler(async (req, res: Response) => {
   }
 });
 const getSingleProduct = asyncHandler(async (req, res: Response) => {
-  const { slug } = req.query;
+  const { id } = req.params;
   try {
     const data = await prisma.product.findUnique({
-      where: { slug: slug?.toString() },
+      where: { slug: id?.toString() }, include: {
+        Category: true,
+        Comment: {
+          where: { isApproved: true },
+          select: {
+            name: true,
+            id: true,
+            content: true,
+            createdAt: true,
+            rating: true
+          },
+          skip: (1 - 1) * pageLimit,
+          take: pageLimit,
+          orderBy: { createdAt: "desc" }
+        },
+        User: {
+          select: {
+            name: true,
+            role: true
+          }
+        }
+      }
     });
-    res.send({ data });
+    res.send({ ...data });
   } catch (err) {
     throw customError('خطا در دیتابیس', 500, err);
   }
@@ -86,6 +107,8 @@ const createProduct = asyncHandler(async (req, res: Response) => {
 
   try {
     const cookie = req.cookies?.peanutUser;
+    console.log(cookie);
+
     const tokenUser = token.verify(
       cookie,
       process.env.TOKEN_SECURITY as string,
@@ -111,7 +134,6 @@ const createProduct = asyncHandler(async (req, res: Response) => {
     res.send({ success: true });
   } catch (err) {
     console.log(err);
-
     throw customError('خطا در دیتابیس', 500, err);
   }
 });
@@ -131,7 +153,7 @@ const updateProduct = asyncHandler(async (req, res: Response) => {
     discountId,
     categoryId,
   } = req.body;
-  const { id } = req.query;
+  const { id } = req.params;
   try {
     await prisma.product.update({
       where: { id: Number(id) },
@@ -153,6 +175,8 @@ const updateProduct = asyncHandler(async (req, res: Response) => {
     });
     res.send({ success: true });
   } catch (err) {
+    console.log(err);
+
     throw customError('خطا در دیتابیس', 500, err);
   }
 });

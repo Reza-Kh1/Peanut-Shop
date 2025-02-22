@@ -97,21 +97,18 @@ enum TypeDiscount {
 
 /////////////////////////////       Model Comment         /////////////////////////////
 model Comment {
-  id         Int       @id @default(autoincrement())
-  isApproved Boolean   @default(false)
+  id         Int      @id @default(autoincrement())
+  isApproved Boolean  @default(false)
   name       String
   phone      String
   email      String
   content    String
   rating     Int?
-  createdAt  DateTime  @default(now())
+  createdAt  DateTime @default(now())
   productId  Int
-  Product    Product   @relation(fields: [productId], references: [id])
-  replyId    Int? // پاسخ‌دهی اختیاری
-  replyTo    Comment?  @relation("CommentReplies", fields: [replyId], references: [id])
-  replies    Comment[] @relation("CommentReplies")
+  Product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  @@index([productId, replyId, isApproved])
+  @@index([productId, isApproved])
 }
 
 /////////////////////////////       Model Category         /////////////////////////////
