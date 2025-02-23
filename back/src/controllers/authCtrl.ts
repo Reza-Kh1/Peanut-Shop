@@ -74,8 +74,8 @@ const signUp = asyncHandler(async (req, res: Response) => {
       });
     }
     res.send({ ...data });
-  } catch (err) {
-    throw customError('خطا در دیتابیس', 500, err);
+  } catch (err: any) {
+    throw customError(err?.message || "خطا در ارتباط با دیتابیس", 500, err);
   }
 });
 const signIn = asyncHandler(async (req, res: Response) => {
@@ -103,8 +103,8 @@ const signIn = asyncHandler(async (req, res: Response) => {
       });
     }
     res.send({ ...dataUser });
-  } catch (err) {
-    throw customError('خطا در دیتابیس', 500, err);
+  } catch (err: any) {
+    throw customError(err?.message || "خطا در ارتباط با دیتابیس", 500, err);
   }
 });
 const forgetPassword = asyncHandler(async (req, res) => {

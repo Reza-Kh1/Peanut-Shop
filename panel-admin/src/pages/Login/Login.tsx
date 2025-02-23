@@ -4,6 +4,7 @@ import Cookies from "js-cookie"
 import { Button, CircularProgress, TextField } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from "react-hook-form"
+import toast from 'react-hot-toast'
 type FormPage = {
   name?: string
   phone: string
@@ -25,6 +26,10 @@ export default function Login() {
     if (isLogin) {
       body.name = form.name
       axios.post("auth", body).then(({ data }) => {
+        if (data?.role === "CUSTOMER") {
+          toast.error("شما اجازه دسترسی ندارید !")
+          return
+        }
         localStorage.setItem("peanut", JSON.stringify(data))
         navigate("/admin/dashboard", { replace: true })
       }).catch((err) => {
@@ -32,10 +37,15 @@ export default function Login() {
       }).finally(() => setLoading(false))
     } else {
       axios.put("auth", body).then(({ data }) => {
+        if (data?.role === "CUSTOMER") {
+          toast.error("شما اجازه دسترسی ندارید !")
+          return
+        }
         localStorage.setItem("peanut", JSON.stringify(data))
         navigate("/admin/dashboard", { replace: true })
       }).catch((err) => {
-        console.log(err)
+        console.log(err.response.data)
+        toast.error(err.response.data.message || "دوباره تلاش کنید !")
       }).finally(() => setLoading(false))
     }
   }

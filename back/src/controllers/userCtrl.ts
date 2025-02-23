@@ -6,26 +6,34 @@ import { createHash } from "../utils/hashPassword"
 import token from "jsonwebtoken"
 import pagination from "../utils/pagination"
 const prisma = new PrismaClient()
+const pageLimit = Number(process.env.PAGE_LIMITE)
 const getUsers = asyncHandler(async (req, res: Response) => {
-    const { email, phone, role, name } = req.query
+    const { email, phone, role, page = 1 } = req.query
     try {
-        const emailVlue = email?.toString()
-        const phoneVlue = phone?.toString()
-        const roleVlue = role?.toString() as any
-        const nameVlue = name?.toString()
+        const search = {} as any
+        if (email || phone) {
+            search.OR = [
+                { email: email ? { contains: email.toString() } : {} },
+                { phone: phone ? { contains: phone.toString() } : {} },
+            ]
+        }
+        if (role) search.role = role.toString()
         const data = await prisma.user.findMany({
-            where: {
-                AND: [
-                    emailVlue ? { email: emailVlue } : {},
-                    phoneVlue ? { phone: phoneVlue } : {},
-                    roleVlue ? { role: roleVlue } : {},
-                    nameVlue ? { name: { contains: nameVlue, mode: 'insensitive' } } : {},
-                ],
+            where: search,
+            select: {
+                role: true,
+                email: true,
+                name: true,
+                id: true,
+                createdAt: true,
+                phone: true
             },
+            skip: (Number(page) - 1) * pageLimit,
+            take: pageLimit,
         });
-
-        // const pages = pagination(count, pageXOffset, limit)
-        res.send({ data: data })
+        const count = await prisma.user.count({ where: search })
+        const pages = pagination(count, Number(page), pageLimit)
+        res.send({ data: data, pagination: pages })
     } catch (err) {
         customError("خطا در دیتابیس", 500, err)
     }

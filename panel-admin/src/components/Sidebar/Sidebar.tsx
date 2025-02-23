@@ -36,7 +36,7 @@ export default function Sidebar() {
     </Link>
   }
   return (
-    <div className='hidden md:flex w-2/12 sticky left-0 top-5 h-full flex-col gap-2'>
+    <div className='hidden  md:flex w-2/12 sticky left-0 top-5 h-full flex-col gap-2'>
       <div className='flex items-center justify-between gap-2 border-b border-d-60/50 pb-5'>
         <ImageCustom alt={"logo"} src={"/erro.webp"} width={100}figureClass="w-24" className="w-24" height={60} />
         <h1 className='font-semibold text-d-100'>Peanut Shop</h1>
