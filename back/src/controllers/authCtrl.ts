@@ -9,6 +9,8 @@ import Ghasedak from '../middlewares/sms';
 const apiKey = process.env.API_KEY_GHASEDAK as string;
 const templateGhasedak = process.env.TEMPLATE_GHASEDAK as string;
 const prisma = new PrismaClient();
+const cookieKey = process.env.COOKIE_KEY as string
+
 const sendSms = async ({
   phone,
   password,
@@ -66,7 +68,7 @@ const signUp = asyncHandler(async (req, res: Response) => {
     data.password = '';
     if (data.role !== 'CUSTOMER') {
       const token = createToken(data);
-      res.cookie('PEANUT_USER', token, {
+      res.cookie(cookieKey, token, {
         httpOnly: false,
         secure: true,
         sameSite: 'strict',
@@ -78,7 +80,7 @@ const signUp = asyncHandler(async (req, res: Response) => {
     throw customError(err?.message || "خطا در ارتباط با دیتابیس", 500, err);
   }
 });
-const signIn = asyncHandler(async (req, res: Response) => {
+const signIn = asyncHandler(async (req, res) => {
   const { email, password, phone } = req.body;
   let dataUser;
   try {
@@ -95,7 +97,7 @@ const signIn = asyncHandler(async (req, res: Response) => {
     dataUser.password = '';
     if (dataUser.role !== 'CUSTOMER') {
       const token = createToken(dataUser);
-      res.cookie('PEANUT_USER', token, {
+      res.cookie(cookieKey, token, {
         httpOnly: false,
         secure: true,
         sameSite: 'strict',
@@ -148,7 +150,7 @@ const forgetPassword = asyncHandler(async (req, res) => {
   }
 });
 const signOut = asyncHandler(async (req, res: Response) => {
-  res.cookie('PEANUT_USER', '', { expires: new Date(0) });
+  res.cookie(cookieKey, '', { expires: new Date(0) });
   res.send({ success: true });
 });
 export { signIn, signUp, signOut, forgetPassword };

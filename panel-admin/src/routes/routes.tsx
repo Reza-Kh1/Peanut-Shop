@@ -11,6 +11,7 @@ import NotFound from "../pages/NotFound/NotFound";
 import Payment from "../pages/Payment/Payment";
 import Product from "../pages/Product/Product";
 import SingleProduct from "../pages/SingleProduct/SingleProduct";
+import Support from "../pages/Support/Support";
 import Users from "../pages/Users/Users";
 
 
@@ -27,6 +28,7 @@ export default [
       { path: "payment", element: <Payment /> },
       { path: "comment", element: <Comments /> },
       { path: "discount", element: <Discount /> },
+      { path: "support", element: <Support /> },
       { path: "product", element: <Product /> },
       { path: "product/create-product", element: <CreateProduct /> },
       { path: "product/*", element: <SingleProduct /> },

@@ -3,17 +3,17 @@ import axios from 'axios';
 import { useState } from 'react'
 import toast from 'react-hot-toast';
 import { PaginationType, UserType } from '../../type';
-import getAllUser from '../../services/fetchData';
 import SearchBox from '../../components/SearchBox/SearchBox';
 import PaginationAdmin from '../../components/PaginationAdmin/PaginationAdmin';
 import DontData from '../../components/DontData/DontData';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Paper, Select, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow } from '@mui/material';
 import { FaPen } from 'react-icons/fa';
-import { FaAngleDown, FaAngleUp, FaTrash } from 'react-icons/fa6';
-import { useForm } from 'react-hook-form';
+import { FaAngleDown, FaAngleUp } from 'react-icons/fa6';
 import FormUser from './FormUser';
 import PendingApi from '../../components/PendingApi/PendingApi';
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
+import DeleteButton from '../../components/DeleteButton/DeleteButton';
+import { getAllUser } from '../../services/fetchData';
+export const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
@@ -22,7 +22,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     fontSize: 14,
   },
 }));
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
+export const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
     backgroundColor: theme.palette.action.hover,
   },
@@ -68,11 +68,11 @@ export default function Users() {
     },
   });
   const { isPending: pendingDelete, mutate: deleteUser } = useMutation({
-    mutationFn: (body: UsersForm) => {
-      return axios.post("user", body);
+    mutationFn: (id: string) => {
+      return axios.delete(`user/${id}`);
     },
     onSuccess: () => {
-      toast.success("کاربر جدید ایجاد شد");
+      toast.success("کاربر حذف شد");
       queryClient.invalidateQueries({ queryKey: ["getUser"] });
     },
     onError: ({ response }: any) => {
@@ -85,8 +85,9 @@ export default function Users() {
       return axios.put(`user/${dataUser?.id}`, body);
     },
     onSuccess: () => {
-      toast.success("کاربر جدید ایجاد شد");
+      toast.success("کاربر ویرایش شد");
       queryClient.invalidateQueries({ queryKey: ["getUser"] });
+      setOpenModal(false)
     },
     onError: ({ response }: any) => {
       console.log(response);
@@ -148,10 +149,7 @@ export default function Users() {
                           ویرایش
                           <FaPen />
                         </Button>
-                        <Button className='!bg-black shadow-md !text-white flex gap-1 !px-4 !py-2 items-center !text-sm'>
-                          حذف
-                          <FaTrash />
-                        </Button>
+                        <DeleteButton deletePost={() => deleteUser(row.id)} text='حذف' pendingDelete={pendingDelete} />
                       </div>
                     </StyledTableCell>
                   </StyledTableRow>

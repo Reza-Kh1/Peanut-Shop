@@ -106,7 +106,8 @@ const createProduct = asyncHandler(async (req, res: Response) => {
   } = req.body;
 
   try {
-    const cookie = req.cookies?.peanutUser;
+    const cookieKey = process.env.COOKIE_KEY as string
+    const cookie = req.cookies[cookieKey];
     console.log(cookie);
 
     const tokenUser = token.verify(

@@ -9,7 +9,7 @@ const getCategory = asyncHandler(async (req, res: Response) => {
     let data;
     if (admin) {
       data = await prisma.category.findMany({
-        select: { name: true, id: true, subCategorys: true },
+        select: { name: true, id: true, subCategoryTo: true },
       });
     } else {
       data = await prisma.category.findMany({
@@ -29,10 +29,9 @@ const getCategory = asyncHandler(async (req, res: Response) => {
     }
     res.send({ data });
   } catch (err) {
-    customError('خطا در دیتابیس', 500, err);
+    throw customError('خطا در دیتابیس', 500, err);
   }
 });
-
 const createCategory = asyncHandler(async (req, res: Response) => {
   const { subCategoryId, name } = req.body;
   try {
@@ -44,7 +43,7 @@ const createCategory = asyncHandler(async (req, res: Response) => {
     });
     res.send({ success: true });
   } catch (err) {
-    customError('خطا در دیتابیس', 500, err);
+    throw customError('خطا در دیتابیس', 500, err);
   }
 });
 const updateCategory = asyncHandler(async (req, res: Response) => {
@@ -57,22 +56,21 @@ const updateCategory = asyncHandler(async (req, res: Response) => {
       },
       data: {
         name: name || undefined,
-        subCategoryId: subCategoryId || undefined,
+        subCategoryId: subCategoryId ? subCategoryId : null,
       },
     });
     res.send({ success: true });
   } catch (err) {
-    customError('خطا در دیتابیس', 500, err);
+    throw customError('خطا در دیتابیس', 500, err);
   }
 });
 const deleteCategory = asyncHandler(async (req, res: Response) => {
   const { id } = req.params;
-  console.log(id);
   try {
     await prisma.category.delete({ where: { id: Number(id) } });
     res.send({ success: true });
   } catch (err) {
-    customError('خطا در دیتابیس', 500, err);
+    throw customError('خطا در دیتابیس', 500, err);
   }
 });
 export { getCategory, createCategory, updateCategory, deleteCategory };

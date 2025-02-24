@@ -33,6 +33,10 @@ export default function Login() {
         localStorage.setItem("peanut", JSON.stringify(data))
         navigate("/admin/dashboard", { replace: true })
       }).catch((err) => {
+        if (err.response.data === "Too many requests, please try again later.") {
+          toast.error("درخواست شما بیش از حد بوده بعدا دوباره تلاش کنید.")
+          return
+        }
         console.log(err)
       }).finally(() => setLoading(false))
     } else {
@@ -44,6 +48,10 @@ export default function Login() {
         localStorage.setItem("peanut", JSON.stringify(data))
         navigate("/admin/dashboard", { replace: true })
       }).catch((err) => {
+        if (err.response.data === "Too many requests, please try again later.") {
+          toast.error("درخواست شما بیش از حد بوده بعدا دوباره تلاش کنید.")
+          return
+        }
         console.log(err.response.data)
         toast.error(err.response.data.message || "دوباره تلاش کنید !")
       }).finally(() => setLoading(false))

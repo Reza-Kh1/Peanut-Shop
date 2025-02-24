@@ -78,8 +78,10 @@ const deleteUser = asyncHandler(async (req, res: Response) => {
 const updateUser = asyncHandler(async (req, res: Response) => {
     const { name, email, phone, password, role } = req.body;
     const { id } = req.params
-    const cookie = req.cookies?.peanutUser;
+    const cookieKey = process.env.COOKIE_KEY as string
+    const cookie = req.cookies[cookieKey];
     const tokenUser = token.verify(cookie, process.env.TOKEN_SECURITY as string) as { id: string, role: "ADMIN" | "CUSTOMER" | "AUTHOR" }
+
     if (tokenUser.role !== "ADMIN" && tokenUser.id !== id) {
         res.status(403).json({ message: "مجاز به این عملیات نیستید" });
         return

@@ -23,6 +23,9 @@ app.use(
     credentials: true,
   }),
 );
+
+
+
 app.use(helmet.xssFilter());
 app.use(express.json());
 app.use('/public', express.static(path.join(__dirname, '../public')));
@@ -30,6 +33,7 @@ app.use(cookieParser());
 const defualtApi = process.env.API_VERSION;
 
 ///////////// Api Routes
+
 app.use(defualtApi + 'auth', authRoute);
 app.use(defualtApi + 'user', userRoute);
 app.use(defualtApi + 'address', adderssRoute);
