@@ -61,7 +61,8 @@ const getSingleProduct = asyncHandler(async (req, res: Response) => {
   const { id } = req.params;
   try {
     const data = await prisma.product.findUnique({
-      where: { slug: id?.toString() }, include: {
+      where: { slug: id?.toString() },
+      include: {
         Category: true,
         Comment: {
           where: { isApproved: true },
@@ -70,19 +71,19 @@ const getSingleProduct = asyncHandler(async (req, res: Response) => {
             id: true,
             content: true,
             createdAt: true,
-            rating: true
+            rating: true,
           },
           skip: (1 - 1) * pageLimit,
           take: pageLimit,
-          orderBy: { createdAt: "desc" }
+          orderBy: { createdAt: 'desc' },
         },
         User: {
           select: {
             name: true,
-            role: true
-          }
-        }
-      }
+            role: true,
+          },
+        },
+      },
     });
     res.send({ ...data });
   } catch (err) {
@@ -106,7 +107,7 @@ const createProduct = asyncHandler(async (req, res: Response) => {
   } = req.body;
 
   try {
-    const cookieKey = process.env.COOKIE_KEY as string
+    const cookieKey = process.env.COOKIE_KEY as string;
     const cookie = req.cookies[cookieKey];
     console.log(cookie);
 
@@ -163,14 +164,14 @@ const updateProduct = asyncHandler(async (req, res: Response) => {
         isAvailable: isAvailable || undefined,
         isStatus: isStatus || undefined,
         slug: slug || undefined,
-        gallery: gallery || undefined,
-        description: description || undefined,
-        tags: tags || undefined,
-        price: price || undefined,
-        weight: weight || undefined,
-        stock: stock || undefined,
+        gallery: gallery?.length ? gallery : null,
+        description: description ? description : null,
+        tags: tags ? tags : null,
+        price: price ? price : null,
+        weight: weight ? weight : null,
+        stock: stock ? stock : null,
         detail: detail || undefined,
-        discountId: discountId || undefined,
+        discountId: discountId ? discountId : null,
         categoryId: categoryId || undefined,
       },
     });

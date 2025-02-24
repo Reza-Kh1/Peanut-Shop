@@ -1,4 +1,3 @@
-import { toast } from 'react-toastify';
 import React, { useState } from 'react'
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from 'axios';
@@ -8,6 +7,7 @@ import CircularProgress, {
 } from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import toast from 'react-hot-toast';
 
 function CircularProgressWithLabel(
     props: CircularProgressProps & { value: number },
@@ -47,9 +47,9 @@ export default function UploadMedia() {
             if (!newFile?.length) return Promise.reject(new Error("هیچ عکسی انتخاب نشده"));
             const formData = new FormData();
             for (let file of newFile) {
-                formData.append("media", file);
+                formData.append("file", file);
             }
-            const { data } = await axios.post("media", formData, {
+            const { data } = await axios.post("upload", formData, {
                 onUploadProgress: (event) => {
                     if (event.lengthComputable && event.total) {
                         const percentComplete = Math.round((event.loaded * 100) / event.total);
@@ -60,14 +60,13 @@ export default function UploadMedia() {
             return data
         },
         onSuccess: () => {
-            toast.success("عکس با موفقیت افزوده شد");
-            query.invalidateQueries({ queryKey: ['mediaDB'] });
-            query.invalidateQueries({ queryKey: ['mediaDBaaS'] });
+            toast.success("عکس با موفقیت آپلود شد");
+            query.invalidateQueries({ queryKey: ['GetMedia'] });
             setProgress(0)
             setLoading(false);
         },
         onError: (err) => {
-            toast.warning(err.message || "عکس آپلود نشد!");
+            toast.error(err.message || "عکس آپلود نشد!");
             setLoading(false);
         },
     });

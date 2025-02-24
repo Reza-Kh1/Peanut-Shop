@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaCartPlus, FaFileInvoiceDollar, FaRegComments } from "react-icons/fa";
-import { FaUsers } from "react-icons/fa6";
+import { FaImage, FaUsers } from "react-icons/fa6";
 import { MdCategory, MdDoorBack } from "react-icons/md";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -50,12 +50,13 @@ export default function Sidebar() {
         <NavlinkAdmin href='/admin/product' icon={<FaCartPlus />} name='محصولات' />
         <NavlinkAdmin href='/admin/comment' icon={<FaRegComments />} name='نظرات' />
         <NavlinkAdmin href='/admin/payment' icon={<FaFileInvoiceDollar />} name='سفارشات' />
+        <NavlinkAdmin href='/admin/uploader' icon={<FaImage />} name='آپلود عکس' />
         <NavlinkAdmin href='/admin/support' icon={<BiSupport />} name='پشتیبانی' />
-        <NavlinkAdmin href='/admin/discount' icon={<CiDiscount1 />} name='ثبت تخفیف' />
+        <NavlinkAdmin href='/admin/discount' icon={<CiDiscount1 />} name='کد تخفیف' />
         <button type='button' onClick={logOutUser} className={`flex items-center p-2 rounded-xl cursor-pointer justify-strat gap-2`}>
           <i className={`bg-white text-slate-800 text-lg p-2 shadow-md rounded-lg`}><MdDoorBack /></i>
           <span>
-            Log out
+            خروج
           </span>
         </button>
       </div>

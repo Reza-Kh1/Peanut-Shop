@@ -24,8 +24,7 @@ export default function ImageCustom({
 }: ImageType) {
     const [load, setLoad] = useState<boolean>(true);
     const [error, setError] = useState<SetStateAction<null> | string>(null)
-    const classImage = className ? className : classPlus ? `${classPlus} rounded-md shadow-md  table mx-auto` : ""
-    const iconClass = `bg-icon w-14 p-3 rounded-md ${classPlus}`
+    const classImage = className ? className : classPlus ? `${classPlus} rounded-md shadow-md  table mx-auto` : " rounded-md shadow-md"
     return (
         <figure className={figureClass || "w-full relative"}>
             <img
@@ -38,7 +37,7 @@ export default function ImageCustom({
                 onLoad={() => setLoad(false)}
                 src={error ? error : src || "/errorImage.webp"}
                 alt={alt || "error"}
-                className={icon ? iconClass : classImage}
+                className={classImage}
                 onError={() => setError("/errorImage.webp")}
             />
             {load && <LoadingImg />}

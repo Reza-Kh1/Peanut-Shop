@@ -13,6 +13,7 @@ import Product from "../pages/Product/Product";
 import SingleProduct from "../pages/SingleProduct/SingleProduct";
 import Support from "../pages/Support/Support";
 import Users from "../pages/Users/Users";
+import Upload from "../pages/Upload/Upload";
 
 
 export default [
@@ -29,6 +30,7 @@ export default [
       { path: "comment", element: <Comments /> },
       { path: "discount", element: <Discount /> },
       { path: "support", element: <Support /> },
+      { path: "uploader", element: <Upload /> },
       { path: "product", element: <Product /> },
       { path: "product/create-product", element: <CreateProduct /> },
       { path: "product/*", element: <SingleProduct /> },
