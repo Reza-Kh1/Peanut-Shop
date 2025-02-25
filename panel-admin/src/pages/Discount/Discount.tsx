@@ -135,7 +135,7 @@ export default function Discount() {
             </Table>
           </TableContainer>
         </div>
-        : <DontData text='هیچ کاربری یافت نشد.' />}
+        : <DontData text='هیچ تخفیفی ثبت نشد.' />}
       <Dialog
         fullScreen
         fullWidth

@@ -35,7 +35,7 @@ const getUsers = asyncHandler(async (req, res: Response) => {
         const pages = pagination(count, Number(page), pageLimit)
         res.send({ data: data, pagination: pages })
     } catch (err) {
-        customError("خطا در دیتابیس", 500, err)
+        throw customError("خطا در دیتابیس", 500, err)
     }
 })
 const createUser = asyncHandler(async (req, res: Response) => {
@@ -63,7 +63,7 @@ const createUser = asyncHandler(async (req, res: Response) => {
         await prisma.user.create({ data: { name, email, password: hash, phone, role } })
         res.send({ success: true })
     } catch (err) {
-        customError("خطا در دیتابیس", 500, err)
+        throw customError("خطا در دیتابیس", 500, err)
     }
 })
 const deleteUser = asyncHandler(async (req, res: Response) => {
@@ -72,7 +72,7 @@ const deleteUser = asyncHandler(async (req, res: Response) => {
         await prisma.user.delete({ where: { id: id } })
         res.send({ success: true })
     } catch (err) {
-        customError("خطا در دیتابیس", 500, err)
+        throw customError("خطا در دیتابیس", 500, err)
     }
 })
 const updateUser = asyncHandler(async (req, res: Response) => {

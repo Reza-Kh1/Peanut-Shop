@@ -46,6 +46,29 @@ const getProduct = asyncHandler(async (req, res: Response) => {
 
     const data = await prisma.product.findMany({
       where: searchProduct,
+      select: {
+        slug: true,
+        name: true,
+        description: true,
+        gallery: true,
+        rating: true,
+        refCode: true,
+        totalComment: true,
+        updatedAt: true,
+        isAvailable: true,
+        isStatus: true,
+        price: true,
+        Discount: {
+          select: {
+            discount: true,
+            endDate: true,
+            startDate: true,
+            type: true
+          }
+        },
+        Comment: true,
+        Category: true,
+      },
       skip: (Number(page) - 1) * pageLimit,
       take: pageLimit,
       orderBy: { createdAt: order as 'desc' | 'asc' },
@@ -103,14 +126,12 @@ const createProduct = asyncHandler(async (req, res: Response) => {
     stock,
     detail,
     discountId,
-    categoryId,
+    categoryId, isAvailable
   } = req.body;
 
   try {
     const cookieKey = process.env.COOKIE_KEY as string;
     const cookie = req.cookies[cookieKey];
-    console.log(cookie);
-
     const tokenUser = token.verify(
       cookie,
       process.env.TOKEN_SECURITY as string,
@@ -118,16 +139,17 @@ const createProduct = asyncHandler(async (req, res: Response) => {
     await prisma.product.create({
       data: {
         name: name,
+        isAvailable: isAvailable || undefined,
         isStatus: isStatus || undefined,
         refCode: generateRefCode(),
         slug,
         gallery: gallery || [],
-        description,
+        description: description || undefined,
         tags: tags || [],
         price: price || 0,
         weight: weight || 0,
-        stock: stock || 0,
-        detail,
+        stock: Number(stock) || 0,
+        detail: detail || undefined,
         userId: tokenUser.id,
         discountId: discountId || undefined,
         categoryId,
@@ -161,8 +183,8 @@ const updateProduct = asyncHandler(async (req, res: Response) => {
       where: { id: Number(id) },
       data: {
         name: name || undefined,
-        isAvailable: isAvailable || undefined,
-        isStatus: isStatus || undefined,
+        isAvailable: isAvailable,
+        isStatus: isStatus,
         slug: slug || undefined,
         gallery: gallery?.length ? gallery : null,
         description: description ? description : null,

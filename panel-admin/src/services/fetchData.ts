@@ -26,7 +26,24 @@ const getAllProduct = async (query: string) => {
   const { data } = await axios.get(`product?${url}`);
   return data;
 };
-
+const getSingleProduct = async (slug: string) => {
+  const { data } = await axios.get(`product/${slug}`);
+  return data;
+}
+const getAllComment = async (query: string) => {
+  const url = new URLSearchParams(query);
+  const { data } = await axios.get(`comment?${url}`);
+  return data;
+}
+const getSupport = async (query: string) => {
+  const url = new URLSearchParams(query);
+  const { data } = await axios.get(`support?${url}`);
+  return data;
+}
+const getSingleChat = async (id: string) => {
+  const { data } = await axios.get(`support?chatId=${id}`);
+  return data;
+}
 export {
   getAllUser,
   getAllProduct,
@@ -34,4 +51,8 @@ export {
   getAllDiscount,
   getAllDiscountProduct,
   getAllImage,
+  getSingleProduct,
+  getAllComment,
+  getSupport,
+  getSingleChat
 };

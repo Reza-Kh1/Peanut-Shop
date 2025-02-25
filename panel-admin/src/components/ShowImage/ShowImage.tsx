@@ -1,12 +1,13 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
+import { Button, Dialog, DialogActions, DialogContent, TextField } from '@mui/material'
 import { useState } from 'react'
 import Upload from '../../pages/Upload/Upload'
 import { FaImage } from 'react-icons/fa6'
 import ImageCustom from '../ImageCustom/ImageCustom'
-import { data } from 'react-router-dom'
 import { FaTrash } from 'react-icons/fa'
-
-export default function ShowImage() {
+type ShowImageType = {
+    setAddImage: (value: { url: string, alt: string }) => void
+}
+export default function ShowImage({ setAddImage }: ShowImageType) {
     const [openModal, setOpenModal] = useState(false)
     const [dataImage, setDataImage] = useState({
         url: "",
@@ -29,7 +30,6 @@ export default function ShowImage() {
                     <Upload setImage={(value) => setDataImage({ alt: "", url: value })} />
                     {dataImage.url ?
                         <div className='flex my-8 gap-10 justify-between items-center'>
-                            
                             <TextField onChange={({ target }) => setDataImage({ ...dataImage, alt: target.value })}
                                 value={dataImage.alt}
                                 variant='outlined' fullWidth label="عنوان عکس" />
@@ -44,7 +44,11 @@ export default function ShowImage() {
                 </DialogContent>
                 <DialogActions>
                     <div className='flex justify-between items-center w-full'>
-                        <Button className='!bg-black shadow-md !text-white flex gap-1 !px-4 !py-2 items-center !text-sm' onClick={() => setOpenModal(false)}>ذخیره</Button>
+                        <Button className='!bg-black shadow-md !text-white flex gap-1 !px-4 !py-2 items-center !text-sm' onClick={() => {
+                            setOpenModal(false)
+                            setAddImage(dataImage)
+                            setDataImage({ alt: "", url: "" })
+                        }}>ذخیره</Button>
                         <Button onClick={() => setOpenModal(false)}>بستن</Button>
                     </div>
                 </DialogActions>

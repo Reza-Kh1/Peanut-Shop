@@ -26,7 +26,7 @@ type ProductType = {
   refCode: string;
   slug: string;
   name: string;
-  gallery: string[];
+  gallery: { url: string, alt: string }[] | null;
   description: string;
   tags: string[];
   price: number;
@@ -42,6 +42,7 @@ type ProductType = {
   categoryId: string;
   Category: CategoryType;
   Comment: [];
+  Discount: DiscountType
   User: {
     name: string;
     role: string;
@@ -56,10 +57,40 @@ type DiscountType = {
   startDate: Date;
   endDate: Date;
 };
+type CommentType = {
+  id: number
+  isApproved: boolean
+  name: string
+  phone: string
+  email: string
+  content: string
+  rating: number
+  createdAt: Date
+  productId: number
+  Product: {
+    name: string
+    slug: string
+  }
+}
+type ChatType = {
+  id: number
+  title: string
+  isDone: boolean
+  userId: string
+  createdAt: Date
+  User: UserType
+  Message: MessaheType[]
+}
+type MessaheType = {
+  content: string
+  senderType: "CUSTOMER" | "ADMIN"
+  createdAt: Date
+}
 export type {
   UserType,
+  CommentType,
   PaginationType,
   CategoryType,
   ProductType,
-  DiscountType,
+  DiscountType, ChatType, MessaheType
 };

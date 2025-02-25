@@ -14,6 +14,7 @@ import productRoute from '../routes/productRoute';
 import commentRoute from '../routes/commentRoute';
 import discountRoute from '../routes/discountRoute';
 import uploadRoute from '../routes/uploadRoute';
+import supportRoute from '../routes/SupportRoute';
 ///////////// config Security
 dotenv.config();
 const app = express();
@@ -42,6 +43,7 @@ app.use(defualtApi + 'product', productRoute);
 app.use(defualtApi + 'comment', commentRoute);
 app.use(defualtApi + 'discount', discountRoute);
 app.use(defualtApi + 'upload', uploadRoute);
+app.use(defualtApi + 'support', supportRoute);
 app.use(globalHandler);
 app.use(notFound);
 

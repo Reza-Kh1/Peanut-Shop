@@ -14,6 +14,7 @@ import SingleProduct from "../pages/SingleProduct/SingleProduct";
 import Support from "../pages/Support/Support";
 import Users from "../pages/Users/Users";
 import Upload from "../pages/Upload/Upload";
+import SingleSupport from "../pages/SingleSupport/SingleSupport";
 
 
 export default [
@@ -30,10 +31,11 @@ export default [
       { path: "comment", element: <Comments /> },
       { path: "discount", element: <Discount /> },
       { path: "support", element: <Support /> },
+      { path: "support/:id", element: <SingleSupport /> },
       { path: "uploader", element: <Upload /> },
       { path: "product", element: <Product /> },
       { path: "product/create-product", element: <CreateProduct /> },
-      { path: "product/*", element: <SingleProduct /> },
+      { path: "product/:slug", element: <SingleProduct /> },
     ],
   },
   { path: "/*", element: <NotFound /> },

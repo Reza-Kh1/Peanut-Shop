@@ -20,6 +20,8 @@ model User {
   updatedAt   DateTime      @updatedAt
   AddressUser AddressUser[]
   Product     Product[]
+  Chat        Chat[]
+  Message     Message[]
 
   @@index([email, phone])
 }
@@ -52,7 +54,7 @@ model Product {
   refCode      String    @unique
   slug         String    @unique
   name         String
-  gallery      String[]
+  gallery      Json?
   description  String
   tags         String[]
   price        Decimal
@@ -119,6 +121,39 @@ model Category {
   subCategoryTo Category?  @relation("SubCategory", fields: [subCategoryId], references: [id])
   subCategorys  Category[] @relation("SubCategory")
   Product       Product[]
+  supportId     Int?
 
   @@index([subCategoryId])
+}
+
+/////////////////////////////       Model Chat         /////////////////////////////
+model Chat {
+  id        Int       @id @default(autoincrement())
+  title     String
+  isDone    Boolean   @default(false)
+  userId    String    @db.Uuid
+  User      User      @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now())
+  Message   Message[]
+
+  @@index([title, isDone])
+}
+
+/////////////////////////////       Model Message       /////////////////////////////
+model Message {
+  id         Int        @id @default(autoincrement())
+  content    String     @db.Text
+  userId     String     @db.Uuid
+  senderType SenderType
+  User       User       @relation(fields: [userId], references: [id])
+  chatId     Int
+  chat       Chat       @relation(fields: [chatId], references: [id])
+  createdAt  DateTime   @default(now())
+
+  @@index([chatId])
+}
+
+enum SenderType {
+  CUSTOMER
+  ADMIN
 }
