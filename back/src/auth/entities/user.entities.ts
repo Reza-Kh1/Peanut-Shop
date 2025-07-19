@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class User {
+export class AuthEntities {
   @ApiProperty()
-  id!: number;
+  id!: string;
 
   @ApiProperty()
   name!: string;
@@ -11,11 +11,14 @@ export class User {
   email!: string;
 
   @ApiProperty()
-  password!: string;
-  
-  @ApiProperty()
-  googleId!: string;
+  googleId?: string;
 
   @ApiProperty()
-  createdAt!: Date;
+  phone?: string;
+
+  @ApiProperty()
+  role!: "ADMIN" | "USER" | "AUTHOR";
+
+  @ApiProperty()
+  createdAt?: Date;
 }

@@ -1,15 +1,36 @@
 // npx prisma db push
-
+// npx prisma db push --force-reset
 generator client {
   provider = "prisma-client-js"
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  name     String
-  googleId String? 
-  password String?
+  id        String     @id @default(uuid()) @db.Uuid
+  email     String     @unique
+  name      String
+  googleId  String?
+  password  String?
+  phone     String?
+  role      RolePerson @default(USER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Token     Token[]
+}
+
+enum RolePerson {
+  ADMIN
+  USER
+  AUTHOR
+}
+
+model Token {
+  id        Int      @id @default(autoincrement())
+  tokenHash String?
+  userId    String?   @db.Uuid
+  User      User?     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  device    String?
+  ipAddress String?
 }
 
 datasource db {
