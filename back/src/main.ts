@@ -15,17 +15,29 @@ async function bootstrap() {
 
   if (process.env.NODE_ENV === 'development') {
     const config = new DocumentBuilder()
-      .setTitle('My API')
-      .setDescription('API documentation for my NestJS project')
+      .setTitle('Peanut Shop API')
+      .setDescription('Peanut Shop API ')
       .setVersion('1.0')
-      .addServer('http://localhost:3000', 'Localhost')
-      .addServer('https://domaintest.com', 'Production')
-      .addTag('Test Mqtt')
+      .addServer('http://localhost:3000', 'Local Server')
+      .addServer('https://domaintest.com', 'Test Server...')
+      .addBearerAuth()
+      .setContact('Reza Khani', 'https://github.com/Reza-Kh1/Peanut-Shop', 'r.khani1385.66@gmail.com')
+      .setLicense('MIT', 'https://opensource.org/licenses/MIT')
       .build();
-
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
+    SwaggerModule.setup('api', app, document, {
+      swaggerOptions: {
+        docExpansion: 'none',
+        displayRequestDuration: true,
+        filter: true,
+        syntaxHighlight: {
+          activated: true,
+          theme: 'obsidian',
+        },
+      },
+    });
   }
+
   await app.listen(process.env.PORT ?? 3000);
 }
 

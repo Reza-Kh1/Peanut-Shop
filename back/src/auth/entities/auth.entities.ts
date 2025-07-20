@@ -10,13 +10,13 @@ export class AuthEntities {
   @ApiProperty()
   email!: string;
 
-  @ApiProperty()
-  googleId?: string;
+  @ApiProperty({ nullable: true, example: 'google-uid-123' })
+  googleId?: string
 
-  @ApiProperty()
-  phone?: string;
+  @ApiProperty({ nullable: true, example: '09390199977', type: 'string' })
+  phone?: null | string
 
-  @ApiProperty()
+  @ApiProperty({ example: 'USER', enum: ['ADMIN', 'USER', 'AUTHOR'] })
   role!: "ADMIN" | "USER" | "AUTHOR";
 
   @ApiProperty()

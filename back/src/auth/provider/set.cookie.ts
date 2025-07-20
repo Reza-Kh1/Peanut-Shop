@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AuthEntities } from 'src/auth/entities/user.entities';
+import { AuthEntities } from 'src/auth/entities/auth.entities';
 import { hashRefreshToken } from 'src/common/utils/hash.util';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Request, Response } from 'express';
@@ -37,7 +37,8 @@ export class SetCookie {
         });
         return {
             ...information
-            , refreshToken: this.jwtService.sign(information)
+            , accessToken: this.jwtService.sign(information),
+            role: "ADMIN"
         }
     }
 

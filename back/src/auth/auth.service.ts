@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { comparePassword, hashPassword } from 'src/common/utils/hash.util';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PostUserDto } from 'src/user/dtos/post.user.dto';
-import { AuthEntities } from './entities/user.entities';
+import { AuthEntities } from './entities/auth.entities';
+import { LoginDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -10,7 +10,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
   ) { }
 
-  async register(body: PostUserDto): Promise<AuthEntities> {
+  async register(body: LoginDto): Promise<AuthEntities> {
     if (!await this.findByEmail(body.email)) {
       const userCreate = await this.prisma.user.create({
         data: {
@@ -34,7 +34,7 @@ export class AuthService {
     }
   }
 
-  async login(body: PostUserDto): Promise<AuthEntities> {
+  async login(body: LoginDto): Promise<AuthEntities> {
     const findUser = await this.findByEmail(body.email)
     if (findUser && body.password && findUser.password) {
       await comparePassword(body.password, findUser.password);
