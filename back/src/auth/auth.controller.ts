@@ -5,8 +5,7 @@ import { Request, Response } from 'express';
 import { LoginDto } from './dto/auth.dto';
 import { ApiBody, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { AuthEntities } from './entities/auth.entities';
-import { Role, Roles } from 'src/common/guard/roles.decorator';
-import { RolesGuard } from 'src/common/guard/roles.guard';
+import { AccessTokenGuard } from './guard/access-token.guard';
 
 /** * کنترلر برای ورود و ثبت نام تمام کاربران سایت */
 @Controller('auth')
@@ -23,8 +22,6 @@ export class AuthController {
    * @param req شیء درخواست برای خواندن اطلاعات مرورگر (در صورت نیاز)
    * @returns اطلاعات احراز هویت شامل دسترسی‌ها و توکن‌ها
    */
-  // @UseGuards(RolesGuard)
-  // @Roles(Role.ADMIN)
   @Post('login')
   @ApiOperation({ summary: 'Sign-In User' })
   @ApiOkResponse({ type: AuthEntities, description: 'Success' })
@@ -52,6 +49,7 @@ export class AuthController {
    * @param req شیء درخواست برای خواندن اطلاعات مرورگر
    * @returns اطلاعات احراز هویت کاربر ثبت‌نام شده
    */
+  @UseGuards(AccessTokenGuard)
   @Post('register')
   @ApiOperation({ summary: 'Sign-Up User' })
   @ApiOkResponse({ type: AuthEntities, description: 'Success' })

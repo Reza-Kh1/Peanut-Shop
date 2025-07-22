@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { comparePassword, hashPassword } from 'src/common/utils/hash.util';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthEntities } from './entities/auth.entities';
@@ -30,7 +30,7 @@ export class AuthService {
         id: userCreate.id,
       }
     } else {
-      throw new UnauthorizedException('کاربر قبلا باایمیل ارسال شده ثبت نام کرده است.');
+      throw new ConflictException('کاربر قبلا باایمیل ارسال شده ثبت نام کرده است.');
     }
   }
 
@@ -48,7 +48,7 @@ export class AuthService {
         id: findUser.id,
       }
     } else {
-      throw new UnauthorizedException('کاربری با این ایمیل ثبت نام نکرده است.');
+      throw new ConflictException('کاربری با این ایمیل ثبت نام نکرده است.');
     }
   }
 

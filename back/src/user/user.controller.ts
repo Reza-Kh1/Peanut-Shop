@@ -3,14 +3,12 @@ import { ApiBody, ApiCreatedResponse } from '@nestjs/swagger';
 import { PostUserDto } from './dtos/post.user.dto';
 import { UserService } from './user.service';
 import { User } from './entities/user.entities';
-import { Role, Roles } from 'src/common/guard/roles.decorator';
-import { RolesGuard } from 'src/common/guard/roles.guard';
+import { AccessTokenGuard } from 'src/auth/guard/access-token.guard';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) { }
-  @UseGuards(RolesGuard)
-  @Roles(Role.ADMIN)
+  @UseGuards(AccessTokenGuard)
   @Get('/')
   getUser() {
     return { ok: "ok" }
