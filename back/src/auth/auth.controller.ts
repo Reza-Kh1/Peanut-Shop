@@ -1,17 +1,32 @@
-import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res, Delete } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SetCookie } from 'src/auth/provider/set.cookie';
 import { Request, Response } from 'express';
 import { LoginDto } from './dto/auth.dto';
 import { ApiBody, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { AuthEntities } from './entities/auth.entities';
-import { AccessTokenGuard } from './guard/access-token.guard';
 
 /** * کنترلر برای ورود و ثبت نام تمام کاربران سایت */
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService, private readonly setCookie: SetCookie) { }
 
+  /**
+ * با درخواست کوکی های کاربر حذف خواهد شد
+ * @param body نیازی به ارسال اطلاعات نیست
+ * @param res شیء پاسخ برای ست‌کردن کوکی
+ * @param req شیء درخواست برای خواندن اطلاعات مرورگر
+ * @returns اطلاعات احراز هویت کاربر ثبت‌نام شد
+ */
+  @ApiOperation({ summary: 'Log-Out User' })
+  @Delete('/')
+  async authLogOut(
+    @Res({ passthrough: true }) res: Response,
+    @Req() req: Request
+  ) {
+    return this.authService.logOut(res, req);
+  }
+  
   /**
    * ورود کاربر با استفاده از رمز عبور یا گوگل آیدی.
    * این متد برای ورود همه‌ی نقش‌ها (ادمین، کاربر، مهمان و ...) قابل استفاده است.
@@ -47,9 +62,8 @@ export class AuthController {
    * @param body اطلاعات ثبت‌نام شامل ایمیل، رمز عبور یا گوگل‌آیدی
    * @param res شیء پاسخ برای ست‌کردن کوکی
    * @param req شیء درخواست برای خواندن اطلاعات مرورگر
-   * @returns اطلاعات احراز هویت کاربر ثبت‌نام شده
+   * @returns اطلاعات احراز هویت کاربر ثبت‌نام شد
    */
-  @UseGuards(AccessTokenGuard)
   @Post('register')
   @ApiOperation({ summary: 'Sign-Up User' })
   @ApiOkResponse({ type: AuthEntities, description: 'Success' })

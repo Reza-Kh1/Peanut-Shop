@@ -3,7 +3,7 @@ import { comparePassword, hashPassword } from 'src/common/utils/hash.util';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthEntities } from './entities/auth.entities';
 import { LoginDto } from './dto/auth.dto';
-
+import { Request, Response } from 'express';
 @Injectable()
 export class AuthService {
   constructor(
@@ -11,9 +11,11 @@ export class AuthService {
   ) { }
 
   async register(body: LoginDto): Promise<AuthEntities> {
+    const firstUser = await this.prisma.user.count()
     if (!await this.findByEmail(body.email)) {
       const userCreate = await this.prisma.user.create({
         data: {
+          role: firstUser ? 'USER' : 'ADMIN',
           email: body.email,
           name: body.username,
           googleId: body.googleId,
@@ -49,6 +51,20 @@ export class AuthService {
       }
     } else {
       throw new ConflictException('کاربری با این ایمیل ثبت نام نکرده است.');
+    }
+  }
+
+  async logOut(res: Response, req: Request) {
+    const cookies = req.cookies as Record<string, string>;
+    if (!cookies?.access_token && !cookies?.refresh_token) {
+      return { success: true }
+    }
+    try {
+      res.clearCookie('access_token');
+      res.clearCookie('refresh_token');
+      return { success: true }
+    } catch (err) {
+      throw new ConflictException('دوباره تلاش کنید.');
     }
   }
 

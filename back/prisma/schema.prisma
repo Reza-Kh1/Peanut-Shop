@@ -5,32 +5,324 @@ generator client {
 }
 
 model User {
-  id        String     @id @default(uuid()) @db.Uuid
-  email     String     @unique
-  name      String
-  googleId  String?
-  password  String?
-  phone     String?
-  role      RolePerson @default(USER)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  Token     Token[]
+  id             String           @id @default(uuid()) @db.Uuid
+  email          String           @unique
+  name           String
+  googleId       String?
+  password       String?
+  phone          String?
+  role           RolePerson       @default(USER)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  Token          Token[]
+  Address        Address[]
+  Comment        CommentProduct[]
+  Wishlist       Wishlist[]
+  Order          Order[]
+  Post           Post[]
+  ProductPreview ProductPreview[]
+  ActivityLog    ActivityLog[]
+  CommentPost    CommentPost[]
+
+  @@map("users")
 }
 
 enum RolePerson {
-  ADMIN
   USER
+  ADMIN
+  VENDOR
   AUTHOR
+}
+
+model Address {
+  id      Int    @id @default(autoincrement())
+  content String
+  phone   String
+  name    String
+  zipCode String
+  userId  String @db.Uuid
+  User    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
 }
 
 model Token {
   id        Int      @id @default(autoincrement())
-  tokenHash String?
-  userId    String?   @db.Uuid
-  User      User?     @relation(fields: [userId], references: [id])
+  tokenHash String?  @unique
+  userId    String   @db.Uuid
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   device    String?
   ipAddress String?
+
+  @@map("tokens")
+}
+
+model Category {
+  id               Int                @id @default(autoincrement())
+  name             String             @unique
+  slug             String             @unique
+  parentId         Int?
+  parent           Category?          @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children         Category[]         @relation("CategoryToCategory")
+  createdAt        DateTime           @default(now())
+  Post             Post[]
+  ProductPreview   ProductPreview[]
+  ProductAttribute ProductAttribute[]
+
+  @@map("categorys")
+}
+
+model Discount {
+  id             Int              @id @default(autoincrement())
+  Code           String?
+  usedCode       Int
+  discountAmount Float
+  beginDate      DateTime
+  expiredDate    DateTime
+  ProductPreview ProductPreview[]
+
+  @@map("discounts")
+}
+
+model CommentProduct {
+  id               Int              @id @default(autoincrement())
+  content          String
+  rate             Float?
+  state            Boolean
+  productPreviewId Int?
+  ProductPreview   ProductPreview?  @relation(fields: [productPreviewId], references: [id], onDelete: Cascade)
+  userId           String           @db.Uuid
+  User             User             @relation(fields: [userId], references: [id])
+  parentId         Int?
+  parent           CommentProduct?  @relation("ReplayToComment", fields: [parentId], references: [id], onDelete: Cascade)
+  children         CommentProduct[] @relation("ReplayToComment")
+  createdAt        DateTime         @default(now())
+
+  @@map("comment_product")
+}
+
+model ProductPreview {
+  id             Int              @id @default(autoincrement())
+  sku            String           @unique
+  slug           String           @unique
+  name           String
+  isApprove      Boolean          @default(false)
+  isStock        Boolean
+  image          String?
+  price          Float?
+  ratingAvg      Float?
+  ratingCount    Int?
+  commentCount   Int?
+  description    String?
+  Tags           Tag[]            @relation("ProductTags")
+  authorId       String           @db.Uuid
+  User           User             @relation(fields: [authorId], references: [id])
+  categoryId     Int
+  Category       Category         @relation(fields: [categoryId], references: [id])
+  discountId     Int?
+  Discount       Discount?        @relation(fields: [discountId], references: [id])
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  Comment        CommentProduct[]
+  ProductDetails Product?
+  Cart           Cart[]
+  OrderItem      OrderItem[]
+  Wishlist       Wishlist[]
+  ActivityLog    ActivityLog[]
+
+  @@map("product_preview")
+}
+
+model Product {
+  id             Int            @id @default(autoincrement())
+  content        Json
+  attribute      Json?
+  video          String?
+  gallery        String[]       @default([])
+  image          String?
+  title          String
+  keywords       String[]       @default([])
+  canonicalUrl   String?
+  productId      Int            @unique
+  ProductPreview ProductPreview @relation(fields: [productId], references: [id], onDelete: Cascade)
+  updatedAt      DateTime       @updatedAt
+  createdAt      DateTime       @default(now())
+
+  @@map("product")
+}
+
+model Wishlist {
+  id               Int             @id @default(autoincrement())
+  note             String?
+  userId           String          @db.Uuid
+  User             User            @relation(fields: [userId], references: [id])
+  productId        Int
+  productPreviewId Int?
+  ProductPreview   ProductPreview? @relation(fields: [productPreviewId], references: [id])
+
+  @@map("wishlists")
+}
+
+model Cart {
+  id               Int             @id @default(autoincrement())
+  detailCart       Json
+  productId        Int
+  ProductPreview   ProductPreview? @relation(fields: [productPreviewId], references: [id])
+  productPreviewId Int?
+
+  @@map("carts")
+}
+
+model Order {
+  id           Int         @id @default(autoincrement())
+  trackingCode String      @unique
+  address      String
+  zipCode      String
+  totalPrice   Float
+  discount     Float
+  phone        String
+  name         String
+  status       StatusOrder @default(PENDING)
+  userId       String      @db.Uuid
+  User         User        @relation(fields: [userId], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  OrderItem    OrderItem[]
+  Payment      Payment[]
+
+  @@map("orders")
+}
+
+enum StatusOrder {
+  PENDING // ایجاد شده ولی پرداخت نشده
+  PROCESSING // در حال آماده‌سازی
+  SHIPPED // ارسال شده
+  DELIVERED // تحویل داده شده
+  CANCELED // لغو شده
+}
+
+model Payment {
+  id            Int           @id @default(autoincrement())
+  orderId       Int
+  Order         Order         @relation(fields: [orderId], references: [id])
+  amount        Float
+  method        String // مثل Zarinpal, Paypal, COD
+  transactionId String? // کد رهگیری بانکی
+  status        PaymentStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+model OrderItem {
+  id               Int             @id @default(autoincrement())
+  price            Float
+  discount         Float
+  name             String
+  detail           Json
+  productId        Int
+  orderId          Int?
+  Order            Order?          @relation(fields: [orderId], references: [id])
+  productPreviewId Int?
+  ProductPreview   ProductPreview? @relation(fields: [productPreviewId], references: [id])
+
+  @@map("order_items")
+}
+
+model Post {
+  id            Int         @id @default(autoincrement())
+  content       String? // محتوای کامل مقاله
+  coverImage    String? // تصویر اصلی
+  title         String
+  keywords      String[]
+  canonicalUrl  String
+  authorId      String      @db.Uuid
+  author        User        @relation(fields: [authorId], references: [id])
+  categortyId   Int
+  Category      Category    @relation(fields: [categortyId], references: [id])
+  postPreviewId Int
+  PostPreview   PostPreview @relation(fields: [postPreviewId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("post")
+}
+
+model PostPreview {
+  id          Int           @id @default(autoincrement())
+  name        String
+  slug        String        @unique
+  image       String
+  description String
+  isApprove   Boolean       @default(false)
+  readTime    Int
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Tags        Tag[]         @relation("PostTags")
+  Post        Post[]
+  ActivityLog ActivityLog[]
+  CommentPost CommentPost[]
+
+  @@map("post_preview")
+}
+
+model CommentPost {
+  id            Int           @id @default(autoincrement())
+  content       String
+  state         Boolean
+  postPreviewId Int?
+  PostPreview   PostPreview?  @relation(fields: [postPreviewId], references: [id], onDelete: Cascade)
+  userId        String        @db.Uuid
+  User          User          @relation(fields: [userId], references: [id])
+  parentId      Int?
+  parent        CommentPost?  @relation("ReplayToComment", fields: [parentId], references: [id], onDelete: Cascade)
+  children      CommentPost[] @relation("ReplayToComment")
+  createdAt     DateTime      @default(now())
+
+  @@map("comment_post")
+}
+
+model Tag {
+  id       Int              @id @default(autoincrement())
+  name     String           @unique
+  Products ProductPreview[] @relation("ProductTags")
+  Posts    PostPreview[]    @relation("PostTags")
+
+  @@map("tag")
+}
+
+model ActivityLog {
+  id             Int             @id @default(autoincrement())
+  action         String
+  title          String
+  role           RolePerson
+  createdAt      DateTime        @default(now())
+  postId         Int?
+  PostPreview    PostPreview?    @relation(fields: [postId], references: [id])
+  productId      Int?
+  ProductPreview ProductPreview? @relation(fields: [productId], references: [id])
+  userId         String          @db.Uuid
+  User           User            @relation(fields: [userId], references: [id])
+
+  @@map("activity_log")
+}
+
+model ProductAttribute {
+  id         Int      @id @default(autoincrement())
+  attribute  Json
+  categoryId Int
+  Category   Category @relation(fields: [categoryId], references: [id])
+
+  @@map("product_attribute")
 }
 
 datasource db {

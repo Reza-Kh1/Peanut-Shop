@@ -1,9 +1,14 @@
+import 'reflect-metadata';
+import * as cookieParser from 'cookie-parser';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { PrismaExceptionFilter } from './filters/prisma.filters';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(cookieParser());
+  app.useGlobalFilters(new PrismaExceptionFilter());
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -14,6 +19,7 @@ async function bootstrap() {
   );
 
   if (process.env.NODE_ENV === 'development') {
+
     const config = new DocumentBuilder()
       .setTitle('Peanut Shop API')
       .setDescription('Peanut Shop API ')

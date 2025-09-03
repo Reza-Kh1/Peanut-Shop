@@ -1,40 +1,41 @@
-// @ts-check
-import eslint from '@eslint/js';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import globals from 'globals';
-import tseslint from 'typescript-eslint';
+// eslint.config.mjs
+import { flatConfig } from '@eslint/js';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
+import prettierPlugin from 'eslint-plugin-prettier';
 
-export default tseslint.config(
-  {
-    ignores: ['eslint.config.mjs'],
-  },
-  eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
-  eslintPluginPrettierRecommended,
+export default [
+  flatConfig,
   {
     languageOptions: {
-      globals: {
-        ...globals.node,
-        ...globals.jest,
-      },
-      sourceType: 'commonjs',
+      parser: '@typescript-eslint/parser',
       parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
+        ecmaVersion: 2024,
+        sourceType: 'module',
+        project: './tsconfig.json', // مسیر tsconfig پروژه
+        tsconfigRootDir: import.meta.url.replace('file://', ''),
+      },
+      globals: {
+        NodeJS: true,
       },
     },
-  },
-  {
-    rules: {
-      '@typescript-eslint/no-explicit-any': "off",
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
-      'prettier/prettier': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', {
-        'argsIgnorePattern': '^_',
-        'varsIgnorePattern': '^_',
-        'caughtErrorsIgnorePattern': '^_',
-      }],
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+      prettier: prettierPlugin,
     },
+    rules: {
+      '@typescript-eslint/no-unsafe-member-access': 'error',
+      '@typescript-eslint/no-unsafe-assignment': 'error',
+      '@typescript-eslint/no-unsafe-call': 'error',
+      '@typescript-eslint/no-unsafe-return': 'error',
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/typedef': [
+        'error',
+        { variableDeclaration: true, arrowParameter: true, memberVariableDeclaration: true }
+      ],
+      '@typescript-eslint/strict-boolean-expressions': 'warn',
+      '@typescript-eslint/explicit-function-return-type': 'warn',
+      '@typescript-eslint/consistent-type-imports': 'error',
+      // '@typescript-eslint/no-explicit-any': 'off',
+    }
   },
-);
+];

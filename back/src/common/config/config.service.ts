@@ -4,6 +4,7 @@ const configServices = () => ({
     secret: process.env.JWT_SECRET,
     expiresIn: process.env.JWT_EXPIRES_IN || '1h',
     refreshToken: process.env.JWT_REFRESH_TOKEN,
+    accessToken: process.env.JWT_ACCESS_TOKEN,
     nameCookie: process.env.JWT_NAME_COOKIE || 'test'
   },
   google: {

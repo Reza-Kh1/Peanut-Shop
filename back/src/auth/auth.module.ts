@@ -4,7 +4,6 @@ import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { SetCookie } from 'src/auth/provider/set.cookie';
-import { AccessTokenGuard } from './guard/access-token.guard';
 @Module({
   imports: [
     JwtModule.registerAsync({
@@ -13,7 +12,6 @@ import { AccessTokenGuard } from './guard/access-token.guard';
         secret: configService.get('jwt.secret'),
         signOptions: {
           expiresIn: configService.get('jwt.expiresIn'),
-
         },
       }),
     }),
