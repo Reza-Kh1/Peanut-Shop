@@ -39,16 +39,38 @@ export class ProductPreviewService {
   }
 
   async getSingleProduct(slug: string) {
-    const data = await this.prisma.productPreview.findMany({
+    const data = await this.prisma.productPreview.findUnique({
       where: { slug },
       include: {
         ProductDetails: true,
-        Comment: true,
+        Comment: {
+          orderBy: { createdAt: 'desc' },
+          where: {
+            parentId: null,
+            state: true,
+          },
+          select: {
+            children: {
+              select: {
+                children: true,
+                name: true,
+                id: true,
+                createdAt: true,
+                rate: true,
+                parentId: true,
+              },
+            },
+            name: true,
+            id: true,
+            createdAt: true,
+            rate: true,
+            parentId: true,
+          },
+        },
         Category: {
           select: {
             name: true,
             slug: true,
-
           }
         },
         Discount: {
@@ -56,7 +78,7 @@ export class ProductPreviewService {
             usedCode: true,
             expiredDate: true,
             beginDate: true,
-            discountAmount: true
+            price: true
           }
         },
         User: {
@@ -64,7 +86,8 @@ export class ProductPreviewService {
             name: true,
             role: true,
           }
-        }
+        },
+        Tags: true
       }
     })
     return data
@@ -118,7 +141,7 @@ export class ProductPreviewService {
         description: body.description,
         authorId: req.user?.id,
         price: body.price,
-
+        Tags: body.tagId.length ? { connect: body.tagId.map((id) => ({ id })) } : undefined
       },
     });
     return { success: true }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
 import { AccessTokenGuard } from 'src/auth/guard/access-token.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
@@ -6,7 +6,7 @@ import { TagService } from './tag.service';
 import { CreateTagDto } from './dtos/tag.create.dto';
 import { TagEntity } from './entities/tag.entities';
 
-/** * کنترلر برای ساخت و اپدیت تمام دسته های سایت */
+/** * کنترلر برای ساخت و اپدیت تمام تگ های سایت */
 @Controller('tag')
 export class TagController {
     constructor(private readonly tagService: TagService) { }

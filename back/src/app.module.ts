@@ -9,6 +9,8 @@ import { WishlistModule } from './wishlist/wishlist.module';
 import { ProductPreviewModule } from './productPreview/productPreview.module';
 import { ProductModule } from './product/product.module';
 import { TagModule } from './tag/tag.module';
+import { DiscountModule } from './discount/discount.module';
+import { CommentProductModule } from './commentProduct/commentProduct.module';
 @Module({
   imports: [
     PrismaModule,
@@ -18,8 +20,10 @@ import { TagModule } from './tag/tag.module';
     AddressModule,
     CategoryModule,
     TagModule,
+    DiscountModule,
     ProductPreviewModule,
     ProductModule,
+    CommentProductModule,
     WishlistModule,
   ],
   // controllers: [AppController],

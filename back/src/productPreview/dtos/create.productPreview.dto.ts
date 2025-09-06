@@ -40,6 +40,6 @@ export class CreateProductPreviewDto {
     discountId!: number;
 
     @IsOptional()
-    @ApiProperty({ example: null, isArray: true, required: false, nullable: true })
+    @ApiProperty({ example: '[]', isArray: true, required: false, nullable: true })
     tagId!: number[];
 }

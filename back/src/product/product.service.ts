@@ -6,9 +6,7 @@ import { CreateProductDto } from './dtos/createProduct.dto';
 export class ProductService {
     constructor(private readonly prisma: PrismaService) { }
 
-    async createProduct(body: CreateProductDto) {
-        console.log(body);
-        
+    async createProduct(body: CreateProductDto) {        
         await this.prisma.product.create({
             data: {
                 content: body.content||'',

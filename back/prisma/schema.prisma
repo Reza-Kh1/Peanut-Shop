@@ -75,11 +75,14 @@ model Category {
 
 model Discount {
   id             Int              @id @default(autoincrement())
-  Code           String?
+  title          String
+  code           String?          @unique
+  price          Int
+  isGlobal       Boolean
   usedCode       Int
-  discountAmount Float
   beginDate      DateTime
   expiredDate    DateTime
+  createdAt      DateTime         @default(now())
   ProductPreview ProductPreview[]
 
   @@map("discounts")
@@ -89,8 +92,9 @@ model CommentProduct {
   id               Int              @id @default(autoincrement())
   content          String
   rate             Float?
+  name             String
   state            Boolean
-  productPreviewId Int?
+  productPreviewId Int
   ProductPreview   ProductPreview?  @relation(fields: [productPreviewId], references: [id], onDelete: Cascade)
   userId           String           @db.Uuid
   User             User             @relation(fields: [userId], references: [id])
@@ -110,9 +114,9 @@ model ProductPreview {
   isApprove      Boolean          @default(false)
   isStock        Boolean
   image          String?
-  price          Float?
-  ratingAvg      Float?
-  ratingCount    Int?
+  price          Float?           @default(0)
+  ratingAvg      Float?           @default(0)
+  ratingCount    Int?             @default(0)
   commentCount   Int?
   description    String?
   Tags           Tag[]            @relation("ProductTags")
