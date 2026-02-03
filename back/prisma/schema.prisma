@@ -1,159 +1,335 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
+// npx prisma db push
+// npx prisma db push --force-reset
 generator client {
   provider = "prisma-client-js"
 }
 
-// npx prisma db push آپدیت مدل ها
-/////////////////////////////       Model User         /////////////////////////////
 model User {
-  id          String        @id @default(uuid()) @db.Uuid
-  name        String // نام  
-  password    String
-  email       String?       @unique // ایمیل
-  phone       String        @unique // شماره تلفن
-  role        RolePerson    @default(CUSTOMER) // جنسیت
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  AddressUser AddressUser[]
-  Product     Product[]
-  Chat        Chat[]
-  Message     Message[]
+  id             String           @id @default(uuid()) @db.Uuid
+  email          String           @unique
+  name           String
+  googleId       String?
+  password       String?
+  phone          String?
+  role           RolePerson       @default(USER)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  Token          Token[]
+  Address        Address[]
+  Comment        CommentProduct[]
+  Wishlist       Wishlist[]
+  Order          Order[]
+  Post           Post[]
+  ProductPreview ProductPreview[]
+  ActivityLog    ActivityLog[]
+  CommentPost    CommentPost[]
 
-  @@index([email, phone])
+  @@map("users")
 }
 
 enum RolePerson {
+  USER
   ADMIN
-  CUSTOMER
+  VENDOR
   AUTHOR
 }
 
-/////////////////////////////       Model AddressUser         /////////////////////////////
-
-model AddressUser {
+model Address {
   id      Int    @id @default(autoincrement())
-  adrress String
-  name    String
+  content String
   phone   String
+  name    String
+  zipCode String
   userId  String @db.Uuid
-  User    User   @relation(fields: [userId], references: [id])
+  User    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
+  @@map("addresses")
 }
 
-/////////////////////////////       Model Product         /////////////////////////////
+model Token {
+  id        Int      @id @default(autoincrement())
+  tokenHash String?  @unique
+  userId    String   @db.Uuid
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  device    String?
+  ipAddress String?
 
-model Product {
-  id           Int       @id @default(autoincrement())
-  isStatus     Boolean   @default(false)
-  isAvailable  Boolean   @default(true)
-  refCode      String    @unique
-  slug         String    @unique
-  name         String
-  gallery      Json?
-  description  String
-  tags         String[]
-  price        Decimal
-  weight       Decimal
-  stock        Int
-  detail       Json?
-  rating       Decimal?
-  totalComment Int?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  userId       String    @db.Uuid
-  User         User      @relation(fields: [userId], references: [id])
-  discountId   Int?
-  Discount     Discount? @relation(fields: [discountId], references: [id])
-  Comment      Comment[]
-  Category     Category  @relation(fields: [categoryId], references: [id])
-  categoryId   Int
-
-  @@index([slug, isStatus])
-  @@index([refCode, isAvailable, price, name, description])
+  @@map("tokens")
 }
 
-/////////////////////////////       Model Discount         /////////////////////////////
+model Category {
+  id               Int                @id @default(autoincrement())
+  name             String             @unique
+  slug             String             @unique
+  parentId         Int?
+  parent           Category?          @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children         Category[]         @relation("CategoryToCategory")
+  createdAt        DateTime           @default(now())
+  Post             Post[]
+  ProductPreview   ProductPreview[]
+  ProductAttribute ProductAttribute[]
+
+  @@map("categorys")
+}
 
 model Discount {
-  id        Int          @id @default(autoincrement())
-  amount    Int?
-  code      String?      @unique
-  type      TypeDiscount
-  discount  Decimal
-  startDate DateTime
-  endDate   DateTime
-  Product   Product[]
+  id             Int              @id @default(autoincrement())
+  title          String
+  code           String?          @unique
+  price          Int
+  isGlobal       Boolean
+  usedCode       Int
+  beginDate      DateTime
+  expiredDate    DateTime
+  createdAt      DateTime         @default(now())
+  ProductPreview ProductPreview[]
 
-  @@index([code, endDate])
+  @@map("discounts")
 }
 
-enum TypeDiscount {
-  PERCENT
-  FIXED
+model CommentProduct {
+  id               Int              @id @default(autoincrement())
+  content          String
+  rate             Float?
+  name             String
+  state            Boolean
+  productPreviewId Int
+  ProductPreview   ProductPreview?  @relation(fields: [productPreviewId], references: [id], onDelete: Cascade)
+  userId           String           @db.Uuid
+  User             User             @relation(fields: [userId], references: [id])
+  parentId         Int?
+  parent           CommentProduct?  @relation("ReplayToComment", fields: [parentId], references: [id], onDelete: Cascade)
+  children         CommentProduct[] @relation("ReplayToComment")
+  createdAt        DateTime         @default(now())
+
+  @@map("comment_product")
 }
 
-/////////////////////////////       Model Comment         /////////////////////////////
-model Comment {
+model ProductPreview {
+  id             Int              @id @default(autoincrement())
+  sku            String           @unique
+  slug           String           @unique
+  name           String
+  isApprove      Boolean          @default(false)
+  isStock        Boolean
+  image          String?
+  price          Float?           @default(0)
+  ratingAvg      Float?           @default(0)
+  ratingCount    Int?             @default(0)
+  commentCount   Int?
+  description    String?
+  Tags           Tag[]            @relation("ProductTags")
+  authorId       String           @db.Uuid
+  User           User             @relation(fields: [authorId], references: [id])
+  categoryId     Int
+  Category       Category         @relation(fields: [categoryId], references: [id])
+  discountId     Int?
+  Discount       Discount?        @relation(fields: [discountId], references: [id])
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  Comment        CommentProduct[]
+  ProductDetails Product?
+  Cart           Cart[]
+  OrderItem      OrderItem[]
+  Wishlist       Wishlist[]
+  ActivityLog    ActivityLog[]
+
+  @@map("product_preview")
+}
+
+model Product {
+  id             Int            @id @default(autoincrement())
+  content        Json
+  attribute      Json?
+  video          String?
+  gallery        String[]       @default([])
+  image          String?
+  title          String
+  keywords       String[]       @default([])
+  canonicalUrl   String?
+  productId      Int            @unique
+  ProductPreview ProductPreview @relation(fields: [productId], references: [id], onDelete: Cascade)
+  updatedAt      DateTime       @updatedAt
+  createdAt      DateTime       @default(now())
+
+  @@map("product")
+}
+
+model Wishlist {
+  id               Int             @id @default(autoincrement())
+  note             String?
+  userId           String          @db.Uuid
+  User             User            @relation(fields: [userId], references: [id])
+  productId        Int
+  productPreviewId Int?
+  ProductPreview   ProductPreview? @relation(fields: [productPreviewId], references: [id])
+
+  @@map("wishlists")
+}
+
+model Cart {
+  id               Int             @id @default(autoincrement())
+  detailCart       Json
+  productId        Int
+  ProductPreview   ProductPreview? @relation(fields: [productPreviewId], references: [id])
+  productPreviewId Int?
+
+  @@map("carts")
+}
+
+model Order {
+  id           Int         @id @default(autoincrement())
+  trackingCode String      @unique
+  address      String
+  zipCode      String
+  totalPrice   Float
+  discount     Float
+  phone        String
+  name         String
+  status       StatusOrder @default(PENDING)
+  userId       String      @db.Uuid
+  User         User        @relation(fields: [userId], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  OrderItem    OrderItem[]
+  Payment      Payment[]
+
+  @@map("orders")
+}
+
+enum StatusOrder {
+  PENDING // ایجاد شده ولی پرداخت نشده
+  PROCESSING // در حال آماده‌سازی
+  SHIPPED // ارسال شده
+  DELIVERED // تحویل داده شده
+  CANCELED // لغو شده
+}
+
+model Payment {
+  id            Int           @id @default(autoincrement())
+  orderId       Int
+  Order         Order         @relation(fields: [orderId], references: [id])
+  amount        Float
+  method        String // مثل Zarinpal, Paypal, COD
+  transactionId String? // کد رهگیری بانکی
+  status        PaymentStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+model OrderItem {
+  id               Int             @id @default(autoincrement())
+  price            Float
+  discount         Float
+  name             String
+  detail           Json
+  productId        Int
+  orderId          Int?
+  Order            Order?          @relation(fields: [orderId], references: [id])
+  productPreviewId Int?
+  ProductPreview   ProductPreview? @relation(fields: [productPreviewId], references: [id])
+
+  @@map("order_items")
+}
+
+model Post {
+  id            Int         @id @default(autoincrement())
+  content       String? // محتوای کامل مقاله
+  coverImage    String? // تصویر اصلی
+  title         String
+  keywords      String[]
+  canonicalUrl  String
+  authorId      String      @db.Uuid
+  author        User        @relation(fields: [authorId], references: [id])
+  categortyId   Int
+  Category      Category    @relation(fields: [categortyId], references: [id])
+  postPreviewId Int
+  PostPreview   PostPreview @relation(fields: [postPreviewId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("post")
+}
+
+model PostPreview {
+  id          Int           @id @default(autoincrement())
+  name        String
+  slug        String        @unique
+  image       String
+  description String
+  isApprove   Boolean       @default(false)
+  readTime    Int
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Tags        Tag[]         @relation("PostTags")
+  Post        Post[]
+  ActivityLog ActivityLog[]
+  CommentPost CommentPost[]
+
+  @@map("post_preview")
+}
+
+model CommentPost {
+  id            Int           @id @default(autoincrement())
+  content       String
+  state         Boolean
+  postPreviewId Int?
+  PostPreview   PostPreview?  @relation(fields: [postPreviewId], references: [id], onDelete: Cascade)
+  userId        String        @db.Uuid
+  User          User          @relation(fields: [userId], references: [id])
+  parentId      Int?
+  parent        CommentPost?  @relation("ReplayToComment", fields: [parentId], references: [id], onDelete: Cascade)
+  children      CommentPost[] @relation("ReplayToComment")
+  createdAt     DateTime      @default(now())
+
+  @@map("comment_post")
+}
+
+model Tag {
+  id       Int              @id @default(autoincrement())
+  name     String           @unique
+  Products ProductPreview[] @relation("ProductTags")
+  Posts    PostPreview[]    @relation("PostTags")
+
+  @@map("tag")
+}
+
+model ActivityLog {
+  id             Int             @id @default(autoincrement())
+  action         String
+  title          String
+  role           RolePerson
+  createdAt      DateTime        @default(now())
+  postId         Int?
+  PostPreview    PostPreview?    @relation(fields: [postId], references: [id])
+  productId      Int?
+  ProductPreview ProductPreview? @relation(fields: [productId], references: [id])
+  userId         String          @db.Uuid
+  User           User            @relation(fields: [userId], references: [id])
+
+  @@map("activity_log")
+}
+
+model ProductAttribute {
   id         Int      @id @default(autoincrement())
-  isApproved Boolean  @default(false)
-  name       String
-  phone      String
-  email      String
-  content    String
-  rating     Int?
-  createdAt  DateTime @default(now())
-  productId  Int
-  Product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attribute  Json
+  categoryId Int
+  Category   Category @relation(fields: [categoryId], references: [id])
 
-  @@index([productId, isApproved])
+  @@map("product_attribute")
 }
 
-/////////////////////////////       Model Category         /////////////////////////////
-model Category {
-  id            Int        @id @default(autoincrement())
-  name          String     @unique
-  subCategoryId Int?
-  subCategoryTo Category?  @relation("SubCategory", fields: [subCategoryId], references: [id])
-  subCategorys  Category[] @relation("SubCategory")
-  Product       Product[]
-  supportId     Int?
-
-  @@index([subCategoryId])
-}
-
-/////////////////////////////       Model Chat         /////////////////////////////
-model Chat {
-  id        Int       @id @default(autoincrement())
-  title     String
-  isDone    Boolean   @default(false)
-  userId    String    @db.Uuid
-  User      User      @relation(fields: [userId], references: [id])
-  createdAt DateTime  @default(now())
-  Message   Message[]
-
-  @@index([title, isDone])
-}
-
-/////////////////////////////       Model Message       /////////////////////////////
-model Message {
-  id         Int        @id @default(autoincrement())
-  content    String     @db.Text
-  userId     String     @db.Uuid
-  senderType SenderType
-  User       User       @relation(fields: [userId], references: [id])
-  chatId     Int
-  chat       Chat       @relation(fields: [chatId], references: [id])
-  createdAt  DateTime   @default(now())
-
-  @@index([chatId])
-}
-
-enum SenderType {
-  CUSTOMER
-  ADMIN
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
